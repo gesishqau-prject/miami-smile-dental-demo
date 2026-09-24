@@ -127,8 +127,9 @@ function firstMissingField(collected) {
 function detectIntent(text) {
   const t = (text || '').toLowerCase();
 
-  if (/\b(can.?t breathe|cant breathe|won.?t stop bleeding|wont stop bleeding|knocked out|severe swelling|chest pain|passed out|unconscious|pain|hurts?|hurting|swoll|swelling|emergency|bleeding|broke|throbbing)\b/.test(t)) {
+  if (/\b(can.?t breathe|cant breathe|difficulty breathing|trouble breathing|difficulty swallowing|trouble swallowing|won.?t stop bleeding|wont stop bleeding|uncontrolled bleeding|heavy bleeding|knocked out|severe swelling|facial swelling|face is swollen|high fever|passed out|unconscious)\b/.test(t)) {
     return 'emergency';
+}
   }
   if (/\b(whiten|whitening)\b/.test(t)) return 'whitening';
   if (/\b(invisalign|aligner|braces)\b/.test(t)) return 'invisalign';
