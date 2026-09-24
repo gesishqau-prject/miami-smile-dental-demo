@@ -288,16 +288,58 @@ function fallbackReply(message = '') {
   };
 }
 
-function fallbackReply() {
+function fallbackReply(message = '') {
+  const t = String(message || '').toLowerCase();
+
+  let reply =
+    "I can help with general dental questions, services, pricing, clinic hours, and appointments. For anything specific to your dental condition, our dentist would need to examine you.";
+
+  if (/\b(chipped|chip|cracked|crack|broken tooth|broke tooth)\b/.test(t)) {
+    reply =
+      "A chipped or cracked tooth should be checked by a dentist even if it doesn't hurt. Avoid chewing hard foods on that side until it's evaluated. If you develop severe swelling, uncontrolled bleeding, or difficulty breathing or swallowing, seek urgent care. Would you like me to help you book an appointment?";
+
+  } else if (/\b(toothache|tooth pain|tooth hurts|sensitive tooth|sensitivity)\b/.test(t)) {
+    reply =
+      "Tooth pain or sensitivity can have several causes, so a dentist would need to examine the tooth. If the pain persists or gets worse, it's a good idea to schedule a visit. Would you like me to help you book one?";
+
+  } else if (/\b(root canal|rootcanal)\b/.test(t)) {
+    reply =
+      `Root canal treatment is used when the inside of a tooth needs treatment. Our demo estimate is ${PRICES.rootcanal}. Exact treatment and price are confirmed after an examination. Would you like to book an evaluation?`;
+
+  } else if (/\b(crown|dental crown)\b/.test(t)) {
+    reply =
+      `A dental crown can help restore and protect a damaged tooth. Our demo estimate is ${PRICES.crown}. A dentist would first need to examine the tooth. Would you like to schedule a consultation?`;
+
+  } else if (/\b(extraction|pull a tooth|remove a tooth)\b/.test(t)) {
+    reply =
+      `A tooth extraction may be recommended in some situations, but a dentist needs to evaluate the tooth first. Our demo estimate is ${PRICES.extraction}. Would you like to schedule an evaluation?`;
+
+  } else if (/\b(cleaning|teeth cleaning|dental cleaning)\b/.test(t)) {
+    reply =
+      `We offer professional dental cleanings. Our demo price for a regular cleaning is ${PRICES.cleaning}. Would you like me to help you book a visit?`;
+
+  } else if (/\b(filling|cavity|cavities)\b/.test(t)) {
+    reply =
+      `Fillings are commonly used for cavities or minor tooth damage. Our demo estimate is ${PRICES.filling}. Exact treatment and cost are confirmed after an examination. Would you like to schedule an appointment?`;
+
+  } else if (/\b(invisalign.*braces|braces.*invisalign|difference.*invisalign|difference.*braces)\b/.test(t)) {
+    reply =
+      "Invisalign uses removable clear aligners, while traditional braces use brackets and wires. Which option is appropriate depends on the patient's orthodontic needs and treatment plan. Dr. Chen would need to evaluate your case before recommending either option. Would you like to book an orthodontic consultation?";
+  }
+
   return {
-    reply:
-      "I don't have that specific detail on hand, and I don't want to guess — our front desk team can confirm and follow up with you directly. Would you like to leave your info so they can reach out?",
-    intent: 'unknown',
-    requiresHumanFollowUp: true,
+    reply,
+    intent: 'offline_general',
+    requiresHumanFollowUp: false,
     isPossibleEmergency: false,
-    leadCapture: { shouldStart: false, shouldContinue: false, suggestedService: null },
+    leadCapture: {
+      shouldStart: false,
+      shouldContinue: false,
+      suggestedService: null
+    }
   };
-}
+} 
+  
 
 // Called when the user has just expressed booking intent (fresh message,
 // NOT already mid-capture). Starts the deterministic capture sequence.
