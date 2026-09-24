@@ -3,456 +3,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Miami Smile Dental — AI Receptionist</title>
+<title>Miami Smile Dental — AI Receptionist Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --ocean-900:#0B3D3A;
-    --ocean-700:#0E5C56;
-    --ocean-500:#177F76;
-    --sand-50:#FBF9F4;
-    --sand-100:#F3EEE2;
-    --coral-500:#FF6A55;
-    --coral-600:#E85641;
-    --ink-900:#152423;
-    --ink-600:#4B5B59;
-    --line:#E2E1D6;
-    --white:#FFFFFF;
-    --danger:#C0392B;
-    --danger-bg:#FDEDEA;
-    --radius-lg:22px;
-    --radius-md:14px;
-    --radius-sm:9px;
-    --shadow-soft: 0 20px 45px -20px rgba(11,61,58,0.28);
-    box-sizing:border-box;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  *{box-sizing:border-box;}
-  html{scroll-padding-top: env(safe-area-inset-top, 0px);}
-  html,body{height:100%;}
-  body{
-    margin:0;
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
-    background:
-      radial-gradient(1100px 620px at 12% -8%, #E9F3EF 0%, transparent 60%),
-      radial-gradient(900px 560px at 108% 8%, #FDEDE7 0%, transparent 55%),
-      var(--sand-50);
-    color:var(--ink-900);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:100%;
-    padding:32px 16px;
-  }
-
-  .app{
-    width:100%;
-    max-width:480px;
-    background:var(--white);
-    border-radius:var(--radius-lg);
-    box-shadow:var(--shadow-soft);
-    display:flex;
-    flex-direction:column;
-    height:min(760px, 88vh);
-    overflow:hidden;
-    border:1px solid var(--line);
-  }
-
-  /* Header */
-  .header{
-    background:linear-gradient(155deg, var(--ocean-900) 0%, var(--ocean-700) 62%, var(--ocean-500) 100%);
-    color:var(--sand-50);
-    padding:20px 22px 18px;
-    position:relative;
-    flex-shrink:0;
-  }
-  .header::after{
-    content:"";
-    position:absolute; left:0; right:0; bottom:-1px; height:18px;
-    background:var(--white);
-    border-radius:18px 18px 0 0;
-  }
-  .brand-row{display:flex; align-items:center; gap:12px;}
-  .logo{
-    width:42px;height:42px;border-radius:12px;
-    background:rgba(255,255,255,0.14);
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-    border:1px solid rgba(255,255,255,0.22);
-  }
-  .logo svg{width:22px;height:22px;}
-  .brand-text h1{
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:19px;
-    margin:0;
-    letter-spacing:0.2px;
-  }
-  .status-row{
-    display:flex; align-items:center; gap:6px;
-    margin-top:3px;
-    font-size:12.5px;
-    color:#CFE8E1;
-  }
-  .status-dot{
-    width:7px;height:7px;border-radius:50%;
-    background:#4ADE80;
-    box-shadow:0 0 0 3px rgba(74,222,128,0.22);
-  }
-  .status-dot.offline{
-    background:#9CA9A6;
-    box-shadow:0 0 0 3px rgba(156,169,166,0.22);
-  }
-  .clinic-line{
-    margin-top:14px;
-    font-size:12.5px;
-    color:#BFDCD4;
-    display:flex;
-    gap:14px;
-    flex-wrap:wrap;
-  }
-
-  /* Chat area */
-  .chat{
-    flex:1;
-    overflow-y:auto;
-    padding:20px 16px 8px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    background:var(--white);
-  }
-  .chat::-webkit-scrollbar{width:6px;}
-  .chat::-webkit-scrollbar-thumb{background:#E2E1D6;border-radius:6px;}
-
-  .row{display:flex; gap:8px; max-width:100%;}
-  .row.bot{justify-content:flex-start;}
-  .row.user{justify-content:flex-end;}
-
-  .avatar{
-    width:26px;height:26px;border-radius:50%;
-    background:var(--ocean-700);
-    color:#fff;
-    font-size:11px;font-weight:700;
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-    margin-top:2px;
-    font-family:'Fraunces',serif;
-  }
-
-  .bubble{
-    padding:10px 13px;
-    border-radius:var(--radius-md);
-    font-size:14.5px;
-    line-height:1.48;
-    max-width:78%;
-    white-space:pre-wrap;
-  }
-  .row.bot .bubble{
-    background:var(--sand-100);
-    color:var(--ink-900);
-    border-bottom-left-radius:4px;
-  }
-  .row.user .bubble{
-    background:var(--ocean-700);
-    color:#fff;
-    border-bottom-right-radius:4px;
-  }
-  .row.bot .bubble.alert{
-    background:var(--danger-bg);
-    color:var(--danger);
-    border:1px solid #F3C8C0;
-  }
-  .row.bot .bubble.summary{
-    background:var(--white);
-    border:1.5px solid var(--ocean-500);
-  }
-  .summary strong{color:var(--ocean-700);}
-  .summary-title{
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:15px;
-    color:var(--ocean-700);
-    display:block;
-    margin-bottom:6px;
-  }
-
-  .typing{
-    display:flex; gap:4px; align-items:center;
-    padding:12px 13px;
-    background:var(--sand-100);
-    border-radius:var(--radius-md);
-    border-bottom-left-radius:4px;
-    width:fit-content;
-  }
-  .typing span{
-    width:6px;height:6px;border-radius:50%;
-    background:#9CA9A6;
-    animation:blink 1.2s infinite ease-in-out;
-  }
-  .typing span:nth-child(2){animation-delay:0.2s;}
-  .typing span:nth-child(3){animation-delay:0.4s;}
-  @keyframes blink{0%,80%,100%{opacity:0.25;} 40%{opacity:1;}}
-
-  /* Quick actions */
-  .quick-actions{
-    padding:10px 16px;
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    border-top:1px solid var(--line);
-    background:var(--sand-50);
-    flex-shrink:0;
-    transition:opacity 0.15s;
-  }
-  .quick-actions.hidden{
-    display:none;
-  }
-  .chip{
-    border:1px solid var(--line);
-    background:var(--white);
-    color:var(--ocean-700);
-    font-size:12.5px;
-    font-weight:600;
-    padding:7px 12px;
-    border-radius:999px;
-    cursor:pointer;
-    transition:background 0.15s, border-color 0.15s, transform 0.1s;
-    font-family:'Inter',sans-serif;
-  }
-  .chip:hover{background:#EFF6F4; border-color:var(--ocean-500);}
-  .chip:active{transform:scale(0.97);}
-  .chip.emergency{
-    color:var(--danger);
-    border-color:#F3C8C0;
-  }
-  .chip.emergency:hover{background:var(--danger-bg);}
-
-  /* Input */
-  .input-bar{
-    display:flex;
-    gap:8px;
-    padding:12px 14px;
-    border-top:1px solid var(--line);
-    background:var(--white);
-    flex-shrink:0;
-  }
-  .input-bar input{
-    flex:1;
-    border:1px solid var(--line);
-    background:var(--sand-50);
-    border-radius:999px;
-    padding:11px 16px;
-    font-size:14px;
-    font-family:'Inter',sans-serif;
-    color:var(--ink-900);
-    outline:none;
-    min-width:0;
-  }
-  .input-bar input:focus{border-color:var(--ocean-500); background:var(--white);}
-  .input-bar input:disabled{opacity:0.6;}
-  .send-btn{
-    width:42px;height:42px;
-    border-radius:50%;
-    border:none;
-    background:var(--coral-500);
-    color:#fff;
-    display:flex;align-items:center;justify-content:center;
-    cursor:pointer;
-    flex-shrink:0;
-    transition:background 0.15s, transform 0.1s;
-  }
-  .send-btn:hover{background:var(--coral-600);}
-  .send-btn:active{transform:scale(0.94);}
-  .send-btn:disabled{opacity:0.5; cursor:not-allowed;}
-  .send-btn svg{width:18px;height:18px;}
-
-  .disclaimer{
-    text-align:center;
-    font-size:10.5px;
-    color:var(--ink-600);
-    padding:7px 16px 10px;
-    background:var(--sand-50);
-    flex-shrink:0;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .typing span{animation:none; opacity:0.6;}
-  }
-
-  @media (max-width:420px){
-    body{padding:0;}
-    .app{
-      height:100vh;
-      height:100dvh;
-      max-width:100%;
-      border-radius:0;
-      border:none;
-    }
-  }
-|/* Professional polish */
-.app{
-  box-shadow:0 24px 70px rgba(15,60,55,.18);
+:root{
+  --ocean-950:#063a37; --ocean-900:#0B3D3A; --ocean-700:#0E5C56;
+  --ocean-500:#177F76; --sand-50:#FBF9F4; --sand-100:#F3EEE2;
+  --coral-500:#FF6A55; --coral-600:#E85641; --ink-900:#152423;
+  --ink-600:#4B5B59; --line:#E2E1D6; --white:#FFFFFF;
+  --danger:#C0392B; --danger-bg:#FDEDEA;
 }
-
-.header{
-  background:linear-gradient(135deg,#064e49 0%,#08756d 100%);
-}
-
-.messages{
-  background:
-    radial-gradient(circle at top right,rgba(13,148,136,.06),transparent 35%),
-    #ffffff;
-}
-
-.quick button{
-  transition:transform .15s ease,box-shadow .15s ease;
-}
-
-.quick button:hover{
-  transform:translateY(-1px);
-  box-shadow:0 4px 12px rgba(0,0,0,.08);
-}
-/* ===== PREMIUM CLINIC UI ===== */
-
+*{box-sizing:border-box}
+html,body{min-height:100%}
 body{
+  margin:0; font-family:'Inter',sans-serif; color:var(--ink-900);
   background:
-    radial-gradient(circle at 15% 20%,rgba(13,148,136,.08),transparent 30%),
-    radial-gradient(circle at 85% 15%,rgba(255,107,87,.07),transparent 28%),
+    radial-gradient(900px 600px at 5% 5%,rgba(23,127,118,.12),transparent 65%),
+    radial-gradient(800px 520px at 100% 0%,rgba(255,106,85,.10),transparent 60%),
     #f7faf9;
 }
-
-.app{
-  max-width:470px;
-  border:1px solid rgba(15,118,110,.10);
-  border-radius:24px;
-  overflow:hidden;
-  box-shadow:
-    0 30px 80px rgba(15,60,55,.16),
-    0 8px 24px rgba(15,60,55,.08);
+.demo-shell{
+  min-height:100vh; width:min(1180px,calc(100% - 64px)); margin:auto;
+  display:grid; grid-template-columns:minmax(0,1fr) 470px; gap:70px; align-items:center;
+  padding:42px 0;
 }
-
+.showcase{max-width:590px}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px; padding:8px 12px;
+  border:1px solid rgba(14,92,86,.15); border-radius:999px; background:rgba(255,255,255,.72);
+  color:var(--ocean-700); font-size:11px; font-weight:700; letter-spacing:.12em;
+}
+.eyebrow-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.12)}
+.showcase h2{
+  font-family:'Fraunces',serif; font-size:clamp(42px,5vw,64px); line-height:1.02;
+  letter-spacing:-1.6px; font-weight:600; margin:22px 0 20px; color:var(--ocean-950);
+}
+.showcase>p{font-size:18px;line-height:1.7;color:var(--ink-600);max-width:555px;margin:0 0 30px}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 22px}
+.feature{
+  min-height:105px;padding:17px;border-radius:18px;background:rgba(255,255,255,.78);
+  border:1px solid rgba(14,92,86,.10);box-shadow:0 10px 30px rgba(11,61,58,.05)
+}
+.feature strong{display:block;font-family:'Fraunces',serif;color:var(--ocean-700);font-size:22px;margin-bottom:6px}
+.feature span{font-size:12.5px;line-height:1.45;color:var(--ink-600)}
+.try-card{
+  display:flex;gap:13px;align-items:flex-start;padding:16px 18px;border-radius:16px;
+  background:var(--ocean-950);color:white;box-shadow:0 18px 40px rgba(11,61,58,.16)
+}
+.try-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.12);flex:0 0 auto}
+.try-card strong{display:block;font-size:13px;margin-bottom:4px}
+.try-card span{font-size:12.5px;line-height:1.5;color:#cfe8e1}
+.microcopy{margin-top:15px;font-size:11.5px;color:#71817e}
+.app-wrap{position:relative}
+.app-wrap:before{
+  content:"INTERACTIVE DEMO";position:absolute;top:-14px;right:18px;z-index:3;
+  background:var(--coral-500);color:white;padding:7px 11px;border-radius:999px;
+  font-size:9.5px;font-weight:700;letter-spacing:.1em;box-shadow:0 7px 18px rgba(255,106,85,.25)
+}
+.app{
+  width:100%;max-width:470px;height:min(760px,88vh);background:white;border-radius:24px;
+  box-shadow:0 30px 80px rgba(15,60,55,.16),0 8px 24px rgba(15,60,55,.08);
+  display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(15,118,110,.10)
+}
 .header{
   background:linear-gradient(135deg,#064e49 0%,#08756d 60%,#0b8b80 100%);
-  padding-top:20px;
-  padding-bottom:17px;
+  color:var(--sand-50);padding:20px 22px 18px;position:relative;flex-shrink:0
 }
-
-.logo{
-  box-shadow:0 8px 22px rgba(0,0,0,.12);
-  backdrop-filter:blur(8px);
+.header:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:18px;background:white;border-radius:18px 18px 0 0}
+.brand-row{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(255,255,255,.22);box-shadow:0 8px 22px rgba(0,0,0,.12)}
+.logo svg{width:22px;height:22px}
+.brand-text h1{font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin:0;letter-spacing:.2px}
+.status-row{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:12.5px;color:#CFE8E1;font-weight:600}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#4ADE80;box-shadow:0 0 0 3px rgba(74,222,128,.22)}
+.status-dot.offline{background:#9CA9A6;box-shadow:0 0 0 3px rgba(156,169,166,.22)}
+.clinic-line{margin-top:14px;font-size:12.5px;color:#BFDCD4;display:flex;gap:14px;flex-wrap:wrap}
+.chat{
+  flex:1;overflow-y:auto;padding:20px 16px 8px;display:flex;flex-direction:column;gap:12px;
+  background:linear-gradient(180deg,rgba(240,253,250,.65),white 22%)
 }
-
-.status{
-  font-weight:600;
-  letter-spacing:.1px;
+.chat::-webkit-scrollbar{width:6px}.chat::-webkit-scrollbar-thumb{background:#E2E1D6;border-radius:6px}
+.row{display:flex;gap:8px;max-width:100%}.row.bot{justify-content:flex-start}.row.user{justify-content:flex-end}
+.avatar{width:26px;height:26px;border-radius:50%;background:var(--ocean-700);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-family:'Fraunces',serif}
+.bubble{padding:10px 13px;border-radius:14px;font-size:14.5px;line-height:1.55;max-width:78%;white-space:pre-wrap;box-shadow:0 4px 14px rgba(15,60,55,.06)}
+.row.bot .bubble{background:var(--sand-100);color:var(--ink-900);border-bottom-left-radius:4px}
+.row.user .bubble{background:var(--ocean-700);color:white;border-bottom-right-radius:4px}
+.row.bot .bubble.alert{background:var(--danger-bg);color:var(--danger);border:1px solid #F3C8C0}
+.row.bot .bubble.summary{background:white;border:1.5px solid var(--ocean-500)}
+.summary strong{color:var(--ocean-700)}.summary-title{font-family:'Fraunces',serif;font-weight:600;font-size:15px;color:var(--ocean-700);display:block;margin-bottom:6px}
+.typing{display:flex;gap:4px;align-items:center;padding:12px 13px;background:var(--sand-100);border-radius:14px;border-bottom-left-radius:4px;width:fit-content}
+.typing span{width:6px;height:6px;border-radius:50%;background:#9CA9A6;animation:blink 1.2s infinite ease-in-out}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.quick-actions{padding:10px 16px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);background:rgba(251,249,244,.92);flex-shrink:0}
+.quick-actions.hidden{display:none}
+.chip{border:1px solid rgba(15,118,110,.18);background:white;color:var(--ocean-700);font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 10px rgba(15,60,55,.05);transition:all .18s ease}
+.chip:hover{transform:translateY(-1px);border-color:rgba(15,118,110,.38);box-shadow:0 7px 18px rgba(15,60,55,.10)}
+.chip.emergency{color:var(--danger);border-color:#F3C8C0}.chip.emergency:hover{background:var(--danger-bg)}
+.input-bar{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line);background:white;flex-shrink:0}
+.input-bar input{flex:1;border:1px solid rgba(15,118,110,.15);background:#f8faf9;border-radius:999px;padding:11px 16px;font-size:14px;font-family:'Inter',sans-serif;color:var(--ink-900);outline:none;min-width:0}
+.input-bar input:focus{border-color:#0f766e;box-shadow:0 0 0 3px rgba(15,118,110,.10);background:white}
+.input-bar input:disabled{opacity:.6}
+.send-btn{width:42px;height:42px;border-radius:50%;border:none;background:var(--coral-500);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;box-shadow:0 7px 18px rgba(255,107,87,.25)}
+.send-btn:hover{background:var(--coral-600);transform:scale(1.04)}.send-btn:disabled{opacity:.5;cursor:not-allowed}.send-btn svg{width:18px;height:18px}
+.disclaimer{text-align:center;font-size:10.5px;color:var(--ink-600);padding:7px 16px 10px;background:#fbfcfc;border-top:1px solid rgba(15,118,110,.08);flex-shrink:0}
+@media(max-width:900px){
+  .demo-shell{grid-template-columns:1fr;gap:35px;width:min(620px,calc(100% - 36px));padding:38px 0}
+  .showcase{text-align:center;margin:auto}.showcase>p{margin-left:auto;margin-right:auto}.try-card{text-align:left}
+  .app-wrap{width:470px;max-width:100%;margin:auto}
 }
-
-.messages{
-  background:
-    linear-gradient(180deg,rgba(240,253,250,.65) 0%,#ffffff 22%,#ffffff 100%);
+@media(max-width:640px){
+  body{background:white}.demo-shell{display:block;width:100%;padding:0}.showcase{display:none}.app-wrap{width:100%}
+  .app-wrap:before{display:none}.app{height:100vh;height:100dvh;max-width:100%;border-radius:0;border:none;box-shadow:none}
 }
-
-.bubble{
-  box-shadow:0 4px 14px rgba(15,60,55,.06);
-  line-height:1.55;
-}
-
-.quick{
-  background:rgba(255,255,255,.96);
-  padding-top:12px;
-  padding-bottom:12px;
-}
-
-.quick button{
-  background:#ffffff;
-  border:1px solid rgba(15,118,110,.18);
-  box-shadow:0 3px 10px rgba(15,60,55,.05);
-  font-weight:600;
-  transition:all .18s ease;
-}
-
-.quick button:hover{
-  transform:translateY(-2px);
-  border-color:rgba(15,118,110,.38);
-  box-shadow:0 7px 18px rgba(15,60,55,.10);
-}
-
-.composer{
-  background:#ffffff;
-  padding-top:12px;
-  padding-bottom:12px;
-}
-
-.composer input{
-  background:#f8faf9;
-  border:1px solid rgba(15,118,110,.15);
-  transition:border-color .2s ease,box-shadow .2s ease;
-}
-
-.composer input:focus{
-  border-color:#0f766e;
-  box-shadow:0 0 0 3px rgba(15,118,110,.10);
-}
-
-.send{
-  box-shadow:0 7px 18px rgba(255,107,87,.25);
-  transition:transform .15s ease;
-}
-
-.send:hover{
-  transform:scale(1.05);
-}
-
-.disclaimer{
-  background:#fbfcfc;
-  border-top:1px solid rgba(15,118,110,.08);
-}
+@media(prefers-reduced-motion:reduce){.typing span{animation:none;opacity:.6}}
 </style>
 </head>
 <body>
 
-<div class="app">
-  <div class="header">
-    <div class="brand-row">
-      <div class="logo">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 3C9.5 3 7.8 4.6 6.6 4.6c-1.6 0-2.6 1.4-2.6 3.4 0 3.6 1.4 8.3 2.6 10.6.6 1.1 1.2 2.1 2.1 2.1.9 0 1.1-1.6 1.4-3 .2-1 .4-1.9 1-1.9s.8.9 1 1.9c.3 1.4.5 3 1.4 3 .9 0 1.5-1 2.1-2.1 1.2-2.3 2.6-7 2.6-10.6 0-2-1-3.4-2.6-3.4C16.2 4.6 14.5 3 12 3Z" stroke="#FBF9F4" stroke-width="1.4" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="brand-text">
-        <h1>Miami Smile Dental</h1>
-        <div class="status-row"><span class="status-dot" id="statusDot"></span> <span id="statusText">AI Receptionist — Available 24/7</span></div>
-      </div>
+<main class="demo-shell">
+  <section class="showcase">
+    <div class="eyebrow"><span class="eyebrow-dot"></span> AI RECEPTIONIST • DENTAL PRACTICES</div>
+    <h2>Turn missed patient inquiries into appointment requests.</h2>
+    <p>This interactive demo shows how a dental AI receptionist can answer common questions, guide patients through booking, and flag urgent messages — including after hours.</p>
+
+    <div class="feature-grid">
+      <div class="feature"><strong>24/7</strong><span>Respond to patient inquiries at any time.</span></div>
+      <div class="feature"><strong>Instant</strong><span>Capture appointment details in the conversation.</span></div>
+      <div class="feature"><strong>Focused</strong><span>Flag urgent messages and guide patients appropriately.</span></div>
     </div>
-    <div class="clinic-line">
-      <span>📍 Biscayne Blvd, Miami</span>
-      <span>☎ (305) 555-0142</span>
+
+    <div class="try-card">
+      <div class="try-icon">✦</div>
+      <div><strong>Try the interactive demo</strong><span>Ask about whitening, Invisalign, pricing, insurance, a chipped tooth — or book an appointment.</span></div>
     </div>
-  </div>
+    <div class="microcopy">Fictional clinic demonstration • No real patient information required</div>
+  </section>
 
-  <div class="chat" id="chat"></div>
+  <section class="app-wrap">
+    <div class="app">
+      <div class="header">
+        <div class="brand-row">
+          <div class="logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 3C9.5 3 7.8 4.6 6.6 4.6c-1.6 0-2.6 1.4-2.6 3.4 0 3.6 1.4 8.3 2.6 10.6.6 1.1 1.2 2.1 2.1 2.1.9 0 1.1-1.6 1.4-3 .2-1 .4-1.9 1-1.9s.8.9 1 1.9c.3 1.4.5 3 1.4 3 .9 0 1.5-1 2.1-2.1 1.2-2.3 2.6-7 2.6-10.6 0-2-1-3.4-2.6-3.4C16.2 4.6 14.5 3 12 3Z" stroke="#FBF9F4" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1>Miami Smile Dental</h1>
+            <div class="status-row"><span class="status-dot" id="statusDot"></span> <span id="statusText">AI Receptionist — Available 24/7</span></div>
+          </div>
+        </div>
+        <div class="clinic-line"><span>📍 Biscayne Blvd, Miami</span><span>☎ (305) 555-0142</span></div>
+      </div>
 
-  <div class="quick-actions" id="quickActions">
-    <button class="chip" data-action="book">Book Appointment</button>
-    <button class="chip" data-action="whitening">Teeth Whitening</button>
-    <button class="chip" data-action="invisalign">Invisalign</button>
-    <button class="chip" data-action="pricing">Pricing</button>
-    <button class="chip" data-action="insurance">Insurance</button>
-    <button class="chip emergency" data-action="emergency">Emergency</button>
-  </div>
+      <div class="chat" id="chat"></div>
 
-  <div class="input-bar">
-    <input id="textInput" type="text" placeholder="Type a message…" autocomplete="off" />
-    <button class="send-btn" id="sendBtn" aria-label="Send message">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M4 12L20 4L14 20L11 13L4 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>
-    </button>
-  </div>
-  <div class="disclaimer">Demo only — fictional clinic. Please don't enter real personal information.</div>
-</div>
+      <div class="quick-actions" id="quickActions">
+        <button class="chip" data-action="book">Book Appointment</button>
+        <button class="chip" data-action="whitening">Teeth Whitening</button>
+        <button class="chip" data-action="invisalign">Invisalign</button>
+        <button class="chip" data-action="pricing">Pricing</button>
+        <button class="chip" data-action="insurance">Insurance</button>
+        <button class="chip emergency" data-action="emergency">Emergency</button>
+      </div>
+
+      <div class="input-bar">
+        <input id="textInput" type="text" placeholder="Type a message…" autocomplete="off" />
+        <button class="send-btn" id="sendBtn" aria-label="Send message">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 12L20 4L14 20L11 13L4 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="disclaimer">Demo only — fictional clinic. Please don't enter real personal information.</div>
+    </div>
+  </section>
+</main>
 
 <script>
 (function(){
