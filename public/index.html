@@ -316,6 +316,101 @@
   transform:translateY(-1px);
   box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
+/* ===== PREMIUM CLINIC UI ===== */
+
+body{
+  background:
+    radial-gradient(circle at 15% 20%,rgba(13,148,136,.08),transparent 30%),
+    radial-gradient(circle at 85% 15%,rgba(255,107,87,.07),transparent 28%),
+    #f7faf9;
+}
+
+.app{
+  max-width:470px;
+  border:1px solid rgba(15,118,110,.10);
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:
+    0 30px 80px rgba(15,60,55,.16),
+    0 8px 24px rgba(15,60,55,.08);
+}
+
+.header{
+  background:linear-gradient(135deg,#064e49 0%,#08756d 60%,#0b8b80 100%);
+  padding-top:20px;
+  padding-bottom:17px;
+}
+
+.logo{
+  box-shadow:0 8px 22px rgba(0,0,0,.12);
+  backdrop-filter:blur(8px);
+}
+
+.status{
+  font-weight:600;
+  letter-spacing:.1px;
+}
+
+.messages{
+  background:
+    linear-gradient(180deg,rgba(240,253,250,.65) 0%,#ffffff 22%,#ffffff 100%);
+}
+
+.bubble{
+  box-shadow:0 4px 14px rgba(15,60,55,.06);
+  line-height:1.55;
+}
+
+.quick{
+  background:rgba(255,255,255,.96);
+  padding-top:12px;
+  padding-bottom:12px;
+}
+
+.quick button{
+  background:#ffffff;
+  border:1px solid rgba(15,118,110,.18);
+  box-shadow:0 3px 10px rgba(15,60,55,.05);
+  font-weight:600;
+  transition:all .18s ease;
+}
+
+.quick button:hover{
+  transform:translateY(-2px);
+  border-color:rgba(15,118,110,.38);
+  box-shadow:0 7px 18px rgba(15,60,55,.10);
+}
+
+.composer{
+  background:#ffffff;
+  padding-top:12px;
+  padding-bottom:12px;
+}
+
+.composer input{
+  background:#f8faf9;
+  border:1px solid rgba(15,118,110,.15);
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+
+.composer input:focus{
+  border-color:#0f766e;
+  box-shadow:0 0 0 3px rgba(15,118,110,.10);
+}
+
+.send{
+  box-shadow:0 7px 18px rgba(255,107,87,.25);
+  transition:transform .15s ease;
+}
+
+.send:hover{
+  transform:scale(1.05);
+}
+
+.disclaimer{
+  background:#fbfcfc;
+  border-top:1px solid rgba(15,118,110,.08);
+}
 </style>
 </head>
 <body>
