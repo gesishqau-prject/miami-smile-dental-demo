@@ -416,7 +416,7 @@ function generateMockResponse(body) {
 
   if (intent === 'emergency') return emergencyReply();
   if (intent === 'whitening') return whiteningReply();
-  if (intent === 'invisalign') return invisalignReply();
+  if (intent === 'invisalign' && !/\b(braces|difference|vs|versus|compare|comparison)\b/i.test(message)) return invisalignReply();
   if (intent === 'insurance') return insuranceReply();
   if (intent === 'pricing') return pricingReply();
   if (intent === 'hours') return hoursReply();
