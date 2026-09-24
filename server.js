@@ -241,13 +241,50 @@ function newPatientReply() {
   };
 }
 
-function denyReply() {
+function fallbackReply(message = '') {
+  const t = String(message || '').toLowerCase();
+
+  let reply =
+    "I can help with general dental questions, services, pricing, clinic hours, and appointments. For anything specific to your dental condition, our dentist would need to examine you.";
+
+  if (/\b(chipped|chip|cracked|crack|broken tooth|broke tooth)\b/.test(t)) {
+    reply =
+      "A chipped or cracked tooth should be checked by a dentist even if it doesn't hurt, because the damage can sometimes extend deeper than it appears. Avoid chewing hard foods on that side until it's evaluated. If you develop severe swelling, uncontrolled bleeding, or difficulty breathing or swallowing, seek urgent care. Would you like me to help you book an appointment?";
+  } else if (/\b(toothache|tooth pain|tooth hurts|sensitive tooth|sensitivity)\b/.test(t)) {
+    reply =
+      "Tooth pain or sensitivity can have several causes, so a dentist would need to examine the tooth to determine what's happening. If the pain is persistent or getting worse, it's a good idea to schedule a dental visit. Would you like me to help you book one?";
+  } else if (/\b(root canal|rootcanal)\b/.test(t)) {
+    reply =
+      `Root canal treatment is used when the inside of a tooth needs treatment. Our demo estimate is ${PRICES.rootcanal}, but the dentist would need to examine the tooth and confirm the exact treatment and price. Would you like to book an evaluation?`;
+  } else if (/\b(crown|dental crown)\b/.test(t)) {
+    reply =
+      `A dental crown can be used to restore and protect a damaged tooth. Our demo estimate is ${PRICES.crown}. The dentist would first examine the tooth to determine whether a crown is appropriate. Would you like to schedule a consultation?`;
+  } else if (/\b(extraction|pull a tooth|remove a tooth)\b/.test(t)) {
+    reply =
+      `Tooth extraction may be recommended in certain situations, but the dentist needs to evaluate the tooth first. Our demo estimate is ${PRICES.extraction}. Would you like me to help you schedule an evaluation?`;
+  } else if (/\b(cleaning|teeth cleaning|dental cleaning)\b/.test(t)) {
+    reply =
+      `We offer professional dental cleanings. Our demo price for a regular cleaning is ${PRICES.cleaning}. New patients may also qualify for our exam and cleaning special. Would you like me to help you book a visit?`;
+  } else if (/\b(filling|cavity|cavities)\b/.test(t)) {
+    reply =
+      `Fillings are commonly used to restore teeth affected by cavities or minor damage. Our demo estimate is ${PRICES.filling}, but exact treatment and cost are confirmed after an examination. Would you like to schedule an appointment?`;
+  } else if (/\b(invisalign.*braces|braces.*invisalign|difference.*invisalign|difference.*braces)\b/.test(t)) {
+    reply =
+      "Invisalign uses removable clear aligners, while traditional braces use brackets and wires. Which option is appropriate depends on the patient's orthodontic needs, lifestyle, and treatment plan. Dr. Chen would need to evaluate your case before recommending either option. Would you like to book an orthodontic consultation?";
+  }
+
   return {
-    reply: "No problem at all! Is there anything else I can help answer?",
-    intent: 'deny',
+    reply,
+    intent: 'offline_general',
     requiresHumanFollowUp: false,
     isPossibleEmergency: false,
-    leadCapture: { shouldStart: false, shouldContinue: false, suggestedService: null },
+    leadCapture: {
+      shouldStart: false,
+      shouldContinue: false,
+      suggestedService: null
+    }
+  };
+}
   };
 }
 
@@ -347,7 +384,7 @@ function generateMockResponse(body) {
   if (intent === 'affirm' && lastTurnOfferedBooking(conversationHistory)) return startCaptureReply(leadState);
   if (intent === 'deny') return denyReply();
 
-  return fallbackReply();
+  return fallbackReply(message);
 }
 
 
