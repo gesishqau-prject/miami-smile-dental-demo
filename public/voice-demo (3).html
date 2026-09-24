@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Miami Smile Dental — AI Voice Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#075b55;--deep:#073f3b;--coral:#ff6a55;--cream:#fbf9f4;--line:#dfe7e4;--ink:#17302d}
+*{box-sizing:border-box} body{margin:0;min-height:100vh;font-family:Inter,sans-serif;background:radial-gradient(circle at 10% 5%,#e6f3ef,transparent 42%),radial-gradient(circle at 95% 5%,#fdeae5,transparent 35%),#f8faf9;color:var(--ink);display:grid;place-items:center;padding:28px}
+.shell{width:min(1050px,100%);display:grid;grid-template-columns:.9fr 1.1fr;gap:36px;align-items:center}
+.intro h1{font:600 52px/1.04 Fraunces,serif;color:var(--deep);margin:12px 0 18px} .intro p{font-size:17px;line-height:1.65;color:#526763}
+.badge{display:inline-block;border:1px solid #cfe0dc;background:#fff;padding:8px 12px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--green)}
+.phone{background:#fff;border:1px solid #dce7e4;border-radius:28px;overflow:hidden;box-shadow:0 28px 75px rgba(7,63,59,.16);height:min(780px,92vh);display:flex;flex-direction:column}
+.top{background:linear-gradient(135deg,#064e49,#0a8b80);color:#fff;padding:22px} .top h2{font:600 22px Fraunces,serif;margin:0 0 4px} .top small{color:#cfe9e4}
+.call-panel{padding:16px 18px;background:#f7fbfa;border-bottom:1px solid var(--line);text-align:center} #callStatus{font-size:12px;color:#60736f;margin-bottom:12px;min-height:16px}
+.controls{display:flex;justify-content:center;gap:12px} button{font:600 13px Inter;border:0;cursor:pointer}
+#callBtn{background:var(--green);color:#fff;padding:11px 20px;border-radius:999px} #callBtn.end{background:#b93b31}
+#micBtn{width:44px;height:44px;border-radius:50%;background:var(--coral);color:#fff;font-size:19px} #micBtn:disabled{opacity:.4;cursor:not-allowed} #micBtn.listening{outline:5px solid rgba(255,106,85,.2)}
+.chat{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px} .row{display:flex;gap:8px} .row.user{justify-content:flex-end} .avatar{width:27px;height:27px;border-radius:50%;background:var(--green);color:white;display:grid;place-items:center;font-size:10px;font-weight:700;flex:none}
+.bubble{max-width:80%;padding:10px 13px;border-radius:14px;background:#f1eee5;font-size:13.5px;line-height:1.5;white-space:pre-wrap} .row.user .bubble{background:var(--green);color:white} .bubble.alert{background:#fdecea;color:#b33b30;border:1px solid #f1c5be} .bubble.summary{background:white;border:1.5px solid #178075} .summary-title{display:block;font:600 14px Fraunces;margin-bottom:5px;color:var(--green)}
+.typing{padding:10px;background:#f1eee5;border-radius:14px} .typing span{display:inline-block;width:5px;height:5px;margin:0 2px;background:#8b9996;border-radius:50%}
+.quick-actions{display:flex;gap:6px;flex-wrap:wrap;padding:9px 12px;border-top:1px solid var(--line)} .quick-actions.hidden{display:none} .chip{padding:6px 9px;border:1px solid #d5e1de;background:white;color:var(--green);border-radius:999px;font-size:11px} .chip.emergency{color:#b33b30}
+.input-bar{display:flex;gap:7px;padding:10px 12px;border-top:1px solid var(--line)} .input-bar input{flex:1;min-width:0;border:1px solid #d5e1de;border-radius:999px;padding:10px 13px;outline:none} .send-btn{width:40px;height:40px;border-radius:50%;background:var(--coral);color:white} .send-btn svg{width:17px}
+.disclaimer{font-size:9.5px;color:#6d7c79;text-align:center;padding:6px 12px 10px}
+.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80} .status-dot.offline{background:#999}
+@media(max-width:760px){body{padding:0;background:#fff}.shell{display:block;width:100%}.intro{display:none}.phone{height:100vh;height:100dvh;border:0;border-radius:0;box-shadow:none}}
+</style>
+</head>
+<body>
+<main class="shell">
+<section class="intro"><span class="badge">VOICE DEMO • $0 BROWSER TEST</span><h1>Talk to the AI receptionist.</h1><p>Start the demo call, tap the microphone, and speak naturally. The same receptionist logic handles questions, emergencies and appointment requests.</p></section>
+<section class="phone">
+  <div class="top"><h2>Miami Smile Dental</h2><small><span class="status-dot" id="statusDot"></span> <span id="statusText">AI Receptionist — Available 24/7</span></small></div>
+  <div class="call-panel"><div id="callStatus">Ready for a demo call</div><div class="controls"><button id="callBtn">Start Call</button><button id="micBtn" aria-label="Speak">🎙</button></div></div>
+  <div class="chat" id="chat"></div>
+  <div class="quick-actions" id="quickActions">
+    <button class="chip" data-action="book">Book Appointment</button><button class="chip" data-action="whitening">Whitening</button><button class="chip" data-action="invisalign">Invisalign</button><button class="chip" data-action="pricing">Pricing</button><button class="chip" data-action="insurance">Insurance</button><button class="chip emergency" data-action="emergency">Emergency</button>
+  </div>
+  <div class="input-bar"><input id="textInput" placeholder="Type or use the microphone…" autocomplete="off"><button class="send-btn" id="sendBtn" aria-label="Send"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12L20 4L14 20L11 13L4 12Z" stroke="currentColor" stroke-width="1.8"/></svg></button></div>
+  <div class="disclaimer">Demo only — fictional clinic. Please don't enter real personal information.</div>
+</section>
+</main>
+<script>
+(function(){
+  // =========================================================================
+  // Step 6: this frontend now talks to a MOCK backend at /api/chat instead of
+  // deciding replies with local JavaScript logic. The visual design and the
+  // deterministic lead-capture SEQUENCE (name -> contact -> service -> date ->
+  // time) are unchanged from Step 3 — only how replies are generated has moved
+  // to the server.
+  // =========================================================================
+
+  const chat = document.getElementById('chat');
+  const input = document.getElementById('textInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const quickActions = document.getElementById('quickActions');
+  const statusDot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+
+  const API_URL = '/api/chat';
+  const REQUEST_TIMEOUT_MS = 10000; // give the mock server 10s before giving up
+
+  // ---------- Session + conversation state (sent to the backend each turn) ----------
+  const sessionId = createSessionId();
+  let conversationHistory = []; // [{role:'user'|'assistant', content:string}, ...]
+
+  // Remembers the last service the backend mentioned (e.g. "Teeth Whitening")
+  // even on turns where booking wasn't started yet, so that when the user
+  // later says "yes" to booking, we can still prefill the service field.
+  let lastSuggestedService = null;
+
+  // leadState is the single source of truth for lead capture, owned by THIS
+  // frontend code (deterministic), not by the AI/backend.
+  const leadState = {
+    step: null,           // which field we're currently asking for (or null)
+    collected: {
+      name: null,
+      contact: null,
+      service: null,
+      date: null,
+      time: null,
+    },
+    captureActive: false,
+  };
+
+  const FIELD_ORDER = ['name', 'contact', 'service', 'date', 'time'];
+
+  function firstMissingField(collected){
+    return FIELD_ORDER.find(f => !collected[f]) || null;
+  }
+
+  // A small, high-severity keyword list checked LOCALLY, instantly, before
+  // any network call — so a true emergency message is never delayed or lost
+  // if the backend is slow or unreachable.
+  const CRITICAL_LOCAL_KEYWORDS = /\b(can.?t breathe|cant breathe|won.?t stop bleeding|wont stop bleeding|knocked out|severe swelling|chest pain|passed out|unconscious)\b/i;
+
+  function createSessionId(){
+    if(window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+    return 'session-' + Math.random().toString(36).slice(2) + Date.now();
+  }
+
+  // ---------- Rendering helpers ----------
+  function scrollToBottom(){ chat.scrollTop = chat.scrollHeight; }
+
+  function addBotMessage(text, opts){
+    opts = opts || {};
+    const row = document.createElement('div');
+    row.className = 'row bot';
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = 'MS';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble' + (opts.alert ? ' alert' : '') + (opts.summary ? ' summary' : '');
+    if(opts.summary && opts.title){
+      const title = document.createElement('span');
+      title.className = 'summary-title';
+      title.textContent = opts.title;
+      bubble.appendChild(title);
+      const rest = document.createElement('span');
+      rest.textContent = text;
+      bubble.appendChild(rest);
+    } else {
+      bubble.textContent = text;
+    }
+    row.appendChild(avatar);
+    row.appendChild(bubble);
+    chat.appendChild(row);
+    scrollToBottom();
+    speakReply(text);
+  }
+
+  function addUserMessage(text){
+    const row = document.createElement('div');
+    row.className = 'row user';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    chat.appendChild(row);
+    scrollToBottom();
+  }
+
+  let typingRow = null;
+  function showTyping(){
+    typingRow = document.createElement('div');
+    typingRow.className = 'row bot';
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = 'MS';
+    const typing = document.createElement('div');
+    typing.className = 'typing';
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    typingRow.appendChild(avatar);
+    typingRow.appendChild(typing);
+    chat.appendChild(typingRow);
+    scrollToBottom();
+  }
+  function hideTyping(){
+    if(typingRow){ typingRow.remove(); typingRow = null; }
+  }
+
+  function setInputEnabled(enabled){
+    input.disabled = !enabled;
+    sendBtn.disabled = !enabled;
+  }
+
+  function setConnectionStatus(online){
+    if(online){
+      statusDot.classList.remove('offline');
+      statusText.textContent = 'AI Receptionist — Available 24/7';
+    } else {
+      statusDot.classList.add('offline');
+      statusText.textContent = 'Connection issue — please try again';
+    }
+  }
+
+  function setQuickActionsVisible(visible){
+    quickActions.classList.toggle('hidden', !visible);
+  }
+
+  // ---------- Backend communication ----------
+  async function callBackend(message){
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+    try{
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: sessionId,
+          message: message,
+          conversationHistory: conversationHistory.slice(-16), // keep payload small
+          leadState: leadState,
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if(!response.ok){
+        throw new Error('Backend responded with status ' + response.status);
+      }
+      return await response.json();
+    } catch(err){
+      clearTimeout(timeoutId);
+      throw err;
+    }
+  }
+
+  // ---------- Lead capture (deterministic, frontend-owned) ----------
+  function beginCaptureFromSuggestion(suggestedService){
+    leadState.captureActive = true;
+    if(suggestedService && !leadState.collected.service){
+      leadState.collected.service = suggestedService;
+    }
+    leadState.step = firstMissingField(leadState.collected);
+    setQuickActionsVisible(false);
+  }
+
+  // Called with the user's raw message when we are mid-capture: writes the
+  // answer into the field that was being asked for, then advances the step.
+  function demoSlotsForDate(dateString){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(dateString || '')) return [];
+    const d = new Date(dateString + 'T12:00:00');
+    if(Number.isNaN(d.getTime())) return [];
+    const day = d.getDay();
+    if(day === 0) return [];
+    if(day === 6) return ['9:00 AM','10:30 AM','12:00 PM'];
+    if(day === 5) return ['8:30 AM','10:00 AM','1:30 PM','3:00 PM'];
+    return ['8:30 AM','10:00 AM','1:30 PM','3:30 PM','5:00 PM'];
+  }
+
+  function normalizeTime(value){
+    return String(value || '').trim().toUpperCase().replace(/\s+/g,' ');
+  }
+
+  function validateCaptureAnswer(field, rawMessage){
+    const value = rawMessage.trim();
+    if(!value) return {ok:false, message:'Please enter a value so I can continue.'};
+
+    if(field === 'date'){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(value)){
+        return {ok:false, message:'Please enter the date as YYYY-MM-DD — for example, 2026-09-24.'};
+      }
+      const chosen = new Date(value + 'T12:00:00');
+      const today = new Date(); today.setHours(0,0,0,0);
+      if(Number.isNaN(chosen.getTime()) || chosen < today){
+        return {ok:false, message:'Please choose a valid future date.'};
+      }
+      if(chosen.getDay() === 0){
+        return {ok:false, message:'The clinic is closed on Sundays. Please choose Monday through Saturday.'};
+      }
+    }
+
+    if(field === 'time'){
+      const slots = demoSlotsForDate(leadState.collected.date);
+      const match = slots.find(slot => normalizeTime(slot) === normalizeTime(value));
+      if(!match){
+        return {ok:false, message:`That time isn't available in the demo schedule. Please choose one of: ${slots.join(', ')}.`};
+      }
+      return {ok:true, value:match};
+    }
+    return {ok:true, value:value};
+  }
+
+  function normalizeSpokenDate(rawMessage){
+    const value = String(rawMessage || '').trim();
+    if(/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+
+    // Voice recognition commonly returns dates such as:
+    // "October 23, 2026", "October 24th", or "October 24".
+    const cleaned = value
+      .replace(/\b(\d{1,2})(st|nd|rd|th)\b/gi, '$1')
+      .replace(/[.,]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const months = {
+      january:0, february:1, march:2, april:3, may:4, june:5,
+      july:6, august:7, september:8, october:9, november:10, december:11
+    };
+    const match = cleaned.match(/\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})(?:\s+(\d{4}))?\b/i);
+    if(!match) return value;
+
+    const now = new Date();
+    const month = months[match[1].toLowerCase()];
+    const day = Number(match[2]);
+    let year = match[3] ? Number(match[3]) : now.getFullYear();
+
+    // If no year was spoken and that date has already passed, use next year.
+    let candidate = new Date(year, month, day, 12, 0, 0);
+    const today = new Date(); today.setHours(0,0,0,0);
+    if(!match[3] && candidate < today){
+      year += 1;
+      candidate = new Date(year, month, day, 12, 0, 0);
+    }
+
+    if(candidate.getFullYear() !== year || candidate.getMonth() !== month || candidate.getDate() !== day){
+      return value;
+    }
+
+    return year + '-' + String(month + 1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+  }
+
+  function normalizeSpokenTime(rawMessage){
+    let v = String(rawMessage || '').trim().toLowerCase()
+      .replace(/\./g,'')
+      .replace(/\s+/g,' ');
+
+    // Common speech-recognition forms.
+    v = v.replace(/\bin the morning\b/g,' am')
+         .replace(/\bin the afternoon\b/g,' pm')
+         .replace(/\bin the evening\b/g,' pm')
+         .replace(/\bat night\b/g,' pm');
+
+    const words = {
+      one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,
+      eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,
+      seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50
+    };
+
+    // "three thirty pm", "ten thirty in the morning", etc.
+    let m = v.match(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s+(fifteen|twenty|thirty|forty|fifty)(?:\s+(am|pm))?\b/);
+    if(m){
+      const h = words[m[1]], min = words[m[2]];
+      let ap = m[3] || '';
+      if(!ap) ap = h >= 8 && h <= 11 ? 'AM' : 'PM';
+      return `${h}:${String(min).padStart(2,'0')} ${ap}`;
+    }
+
+    // "three pm", "ten am"
+    m = v.match(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)(?:\s+o'?clock)?\s*(am|pm)\b/);
+    if(m) return `${words[m[1]]}:00 ${m[2].toUpperCase()}`;
+
+    // "3 30 PM", "3:30 p.m.", "3:30 PM"
+    m = v.match(/\b(\d{1,2})(?::|\s)(\d{2})\s*(am|pm)\b/);
+    if(m) return `${Number(m[1])}:${m[2]} ${m[3].toUpperCase()}`;
+
+    // "3 PM"
+    m = v.match(/\b(\d{1,2})\s*(am|pm)\b/);
+    if(m) return `${Number(m[1])}:00 ${m[2].toUpperCase()}`;
+
+    return String(rawMessage || '').trim();
+  }
+
+  function recordCaptureAnswer(rawMessage){
+    if(!leadState.step) return {ok:true};
+    const field = leadState.step;
+    const normalizedAnswer =
+      field === 'date' ? normalizeSpokenDate(rawMessage) :
+      field === 'time' ? normalizeSpokenTime(rawMessage) :
+      rawMessage;
+    const validation = validateCaptureAnswer(field, normalizedAnswer);
+    if(!validation.ok) return validation;
+    leadState.collected[field] = validation.value;
+    leadState.step = firstMissingField(leadState.collected);
+    return {ok:true};
+  }
+
+  function endCaptureIfComplete(){
+    if(leadState.captureActive && leadState.step === null){
+      leadState.captureActive = false;
+      setQuickActionsVisible(true);
+      // Reset collected service/date/time so a new request can be captured
+      // later in the same session, while keeping name/contact on hand.
+      leadState.collected.service = null;
+      leadState.collected.date = null;
+      leadState.collected.time = null;
+    }
+  }
+
+  // ---------- Main send pipeline ----------
+  async function sendMessage(rawText){
+    const text = rawText.trim();
+    if(!text) return;
+
+    addUserMessage(text);
+    conversationHistory.push({ role: 'user', content: text });
+    input.value = '';
+
+    // 1) Instant local emergency fallback — never waits on the network.
+    if(CRITICAL_LOCAL_KEYWORDS.test(text)){
+      addBotMessage(
+        "If this is a life-threatening emergency, please call 911 or go to the nearest ER right away.",
+        { alert: true }
+      );
+    }
+
+    // 2) Deterministic lead-capture bookkeeping happens BEFORE calling the backend,
+    //    so structured code (not the AI) decides what was just answered.
+    const wasCaptureActive = leadState.captureActive;
+    let backendMessage = text;
+    if(wasCaptureActive){
+      const captureField = leadState.step;
+      const captureResult = recordCaptureAnswer(text);
+      if(!captureResult.ok){
+        addBotMessage(captureResult.message);
+        conversationHistory.push({ role:'assistant', content:captureResult.message });
+        input.focus();
+        return;
+      }
+
+      // Keep the natural spoken phrase on screen, but send the normalized
+      // booking value to the backend when the user is answering the date.
+      if(captureField === 'date' && leadState.collected.date){
+        backendMessage = leadState.collected.date;
+      } else if(captureField === 'time' && leadState.collected.time){
+        backendMessage = leadState.collected.time;
+      }
+    }
+
+    setInputEnabled(false);
+    showTyping();
+
+    try{
+      const result = await callBackend(backendMessage);
+      hideTyping();
+      setConnectionStatus(true);
+
+      // Render the backend's reply
+      if(result.intent === 'lead_capture_complete'){
+        addBotMessage(result.reply, { summary: true, title: "Here's what I've got 👇" });
+      } else {
+        addBotMessage(result.reply, { alert: !!result.isPossibleEmergency });
+      }
+      conversationHistory.push({ role: 'assistant', content: result.reply });
+
+      // React to leadCapture flags from the backend
+      if(result.leadCapture){
+        if(result.leadCapture.suggestedService){
+          lastSuggestedService = result.leadCapture.suggestedService;
+        }
+        if(result.leadCapture.shouldStart && !leadState.captureActive){
+          beginCaptureFromSuggestion(lastSuggestedService);
+          lastSuggestedService = null; // consumed
+        }
+      }
+
+      // If we were mid-capture, check whether this turn completed it
+      if(wasCaptureActive){
+        endCaptureIfComplete();
+      }
+
+    } catch(err){
+      hideTyping();
+      setConnectionStatus(false);
+      addBotMessage(
+        "I'm having trouble connecting to the receptionist system right now. Please call us directly at (305) 555-0142, or try again in a moment.",
+        { alert: true }
+      );
+      // Roll back capture bookkeeping for this turn isn't necessary — the
+      // user's answer is still safely recorded locally in leadState; they
+      // can simply try sending again once the connection is back.
+    } finally {
+      setInputEnabled(true);
+      input.focus();
+    }
+  }
+
+  // ---------- Quick action buttons ----------
+  quickActions.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.chip');
+    if(!btn) return;
+    const action = btn.dataset.action;
+    const labels = {
+      book: "I'd like to book an appointment",
+      whitening: "Tell me about teeth whitening",
+      invisalign: "Tell me about Invisalign",
+      pricing: "What are your prices?",
+      insurance: "Do you accept my insurance?",
+      emergency: "I'm having a dental emergency"
+    };
+    if(labels[action]) sendMessage(labels[action]);
+  });
+
+
+  // ---------- Browser voice demo ----------
+  const micBtn = document.getElementById('micBtn');
+  const callBtn = document.getElementById('callBtn');
+  const callStatus = document.getElementById('callStatus');
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  let callActive = false;
+
+  function speakReply(text){
+    if(!callActive || !('speechSynthesis' in window) || !text) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = 1;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function setCall(active){
+    callActive = active;
+    callBtn.textContent = active ? 'End Call' : 'Start Call';
+    callBtn.classList.toggle('end', active);
+    micBtn.disabled = !active || !SpeechRecognition;
+    callStatus.textContent = !SpeechRecognition
+      ? 'Voice recognition is not supported in this browser.'
+      : active ? 'Call connected — tap the microphone and speak.' : 'Ready for a demo call';
+    if(!active){
+      if(recognition){ try{ recognition.stop(); }catch(e){} }
+      if('speechSynthesis' in window) window.speechSynthesis.cancel();
+      micBtn.classList.remove('listening');
+    }
+  }
+
+  if(SpeechRecognition){
+    recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    recognition.onstart = ()=>{
+      micBtn.classList.add('listening');
+      callStatus.textContent = 'Listening…';
+    };
+    recognition.onend = ()=>{
+      micBtn.classList.remove('listening');
+      if(callActive) callStatus.textContent = 'Call connected — tap the microphone and speak.';
+    };
+    recognition.onerror = ()=>{
+      micBtn.classList.remove('listening');
+      callStatus.textContent = 'I could not hear that. Tap the microphone and try again.';
+    };
+    recognition.onresult = (event)=>{
+      const transcript = event.results[0][0].transcript;
+      callStatus.textContent = 'You said: “' + transcript + '”';
+      sendMessage(transcript);
+    };
+  }
+
+  callBtn.addEventListener('click', ()=>{
+    setCall(!callActive);
+    if(callActive){
+      setTimeout(()=>speakReply("Hi, you've reached Miami Smile Dental. I'm the AI receptionist. How can I help you today?"), 250);
+    }
+  });
+
+  micBtn.addEventListener('click', ()=>{
+    if(!callActive || !recognition) return;
+    if('speechSynthesis' in window) window.speechSynthesis.cancel();
+    try{ recognition.start(); }catch(e){}
+  });
+
+  setCall(false);
+
+  // ---------- Input events ----------
+  sendBtn.addEventListener('click', ()=> sendMessage(input.value));
+  input.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && !input.disabled) sendMessage(input.value);
+  });
+
+  // ---------- Welcome message ----------
+  window.addEventListener('load', ()=>{
+    setTimeout(()=>{
+      const welcome = "Hi, welcome to Miami Smile Dental! 😊 I'm your AI receptionist, here 24/7 to answer questions, share pricing, or help you book an appointment. How can I help you today?";
+      addBotMessage(welcome);
+      conversationHistory.push({ role: 'assistant', content: welcome });
+    }, 400);
+  });
+})();
+</script>
+</body>
+</html>
