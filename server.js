@@ -285,8 +285,7 @@ function fallbackReply(message = '') {
     }
   };
 }
-  };
-}
+  
 
 function fallbackReply(message = '') {
   const t = String(message || '').toLowerCase();
