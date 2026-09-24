@@ -123,7 +123,7 @@ function firstMissingField(collected) {
 // everything downstream only depends on the shape of the response object.
 // ---------------------------------------------------------------------------
 
-|// AI MODE: Real AI handles free-form questions; booking and emergencies stay controlled by the clinic rules.
+// AI MODE: Real AI handles free-form questions; booking and emergencies stay controlled by the clinic rules.
 function detectIntent(text) {
   const t = (text || '').toLowerCase();
 
